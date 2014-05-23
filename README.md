@@ -1,7 +1,8 @@
 ### 图片浏览器
-1. 依赖开源框架[BUI](http://builive.com/); 
-2. [http://builive.com/demo/imgview.php#imgview/viewcontent.php](http://builive.com/demo/imgview.php#imgview/viewcontent.php) 给这个页面也打个广告.
-3. 只需生成左边的树形结构(非异步), 文件夹靠前, 否则联动定位有问题. 
+1. [查看demo](http://fangk.github.io/imgview/)
+2. 依赖开源框架[BUI](http://builive.com/); 
+3. [http://builive.com/demo/imgview.php#imgview/viewcontent.php](http://builive.com/demo/imgview.php#imgview/viewcontent.php) 给这个页面也打个广告.
+4. 只需生成左边的树形结构(非异步), 文件夹靠前, 否则联动定位有问题. 
 
 ---
 ### 功能介绍
