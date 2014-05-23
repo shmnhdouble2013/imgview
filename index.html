@@ -1,0 +1,482 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- 让360浏览器跟IE自动选择高版本浏览器内核 -->
+  <meta name="renderer" content="webkit" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge;chrome=1" />
+  <title>图片浏览器</title>
+  <!-- BUI 组件css -->
+  <link rel="stylesheet" href="https://s.tbcdn.cn/g/fi/bui/css/dpl-min.css" />
+  <link rel="stylesheet" href="https://s.tbcdn.cn/g/fi/bui/css/bui-min.css" />
+  <!-- BUI js库 -->
+  <script src="https://s.tbcdn.cn/g/fi/bui/jquery-1.8.1.min.js"></script>
+  <script src="https://s.tbcdn.cn/g/fi/bui/seed-min.js"></script>
+
+  <!-- project -->
+  <link href="css/index-min.css" rel="stylesheet" />
+  <script src="js/keymaster-min.js"></script>
+  <script src="js/jquery.ba-resize-min.js"></script>
+  <!-- 如果支持localstorage就用localstorage,不是单纯的cookie. -->
+  <script src="js/jquery.cookie-min.js"></script>
+  <script src="js/jquery.mousewheel-min.js"></script>
+  <script src="js/screenfull-min.js"></script>
+  <script src="js/config-min.js"></script>
+
+</head>
+<body oncontextmenu="self.event.returnValue=false" onselectstart="return false">
+
+  <div id="J_Layout">
+    <div class="north top-container">
+      <h4>image explorer by kai.fangk@alibaba-inc.com</h4>
+      <div class="top-content clearfix">
+        <div class="top-left-content pull-left clearfix">
+          <!-- <input type="text" name="" id="search1" class="top-search ui-autocomplete-input" autocomplete="off"><span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span> -->
+          <div class="tab-container clearfix">
+            <div class="btn-group">
+              <a hideFocus="true" title="单屏展示(1)" href="#" class="btn-tabs btn-tabs-1 btn-group-item btn-group-left"><i></i></a>
+              <a hideFocus="true" title="双屏对比(2)" href="#" class="btn-tabs btn-tabs-2 btn-group-item btn-group-center"><i></i></a>
+              <a hideFocus="true" title="三屏对比(3)" href="#" class="btn-tabs btn-tabs-3 btn-group-item btn-group-right"><i></i></a>
+            </div>
+            <div class="btn-group btn-cmd-group">
+
+              <a hideFocus="true" title="自动大小(f)" href="#" data-cmd="fitToggle" class="btn-group-item btn-group-left">&#xf0005;</a>
+              <a hideFocus="true" title="放大(w)" href="#" data-cmd="zoom" class="btn-group-item btn-group-center">&#xf01b9;</a>
+              <a hideFocus="true" title="缩小(s)" href="#" data-cmd="micrify" class="btn-group-item btn-group-center">&#xf01b8;</a>
+              <a hideFocus="true" title="上一张(a)" href="#" data-cmd="_paintPrev" class="btn-group-item btn-group-center">&#xf016e;</a>
+              <a hideFocus="true" title="下一张(d)" href="#" data-cmd="_paintNext" class="btn-group-item btn-group-center">&#xf016d;</a>
+              <a hideFocus="true" title="左旋(q)" href="#" data-cmd="leftHand" class="btn-group-item btn-group-center">&#xf013a;</a>
+              <a hideFocus="true" title="右旋(e)" href="#" data-cmd="rightHand" class="btn-group-item btn-group-center">&#xf013b;</a>
+              <a hideFocus="true" title="全屏(g),不支持IE!" href="#" data-cmd="_fullScreen" class="btn-group-item btn-group-right">&#xf01b7;</a>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="top-right-content pull-right clearfix">
+            <input type="text" name="" id="search1" class="top-search">
+        </div> -->
+      </div>
+    </div>
+    <div class="west">
+
+    </div>
+    <div class="center">
+      <div id="imgview-wrap">
+        <div class="imgview-content">
+          <div class="imgview-content-inner imgview-content-1" id="imgview-content-1"></div>
+        </div>
+        <div class="imgview-content">
+          <div class="imgview-content-inner imgview-content-2" id="imgview-content-2"></div>
+        </div>
+        <div class="imgview-content">
+          <div class="imgview-content-inner imgview-content-3" id="imgview-content-3"></div>
+        </div>
+      </div>
+      <div class="preview-list-wrap" id="preview-list-wrap">
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    BUI.use('js/main',function(Main){
+      // 后台生成左边的树形结构。
+      var nodes = [{
+        text: "mac的示例图片",
+        children: [{
+          text: "Sky",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Sky.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Sky.jpg"
+        },{
+          text: "Beach.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Beach.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Beach.jpg"
+        },{
+          text: "BluePond.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BluePond.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BluePond.jpg"
+        },{
+          text: "BristleGrass.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BristleGrass.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BristleGrass.jpg"
+        },{
+          text: "Desert.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Desert.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Desert.jpg"
+        },{
+          text: "Ducks-on-a-Misty-Pond.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Ducks-on-a-Misty-Pond.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Ducks-on-a-Misty-Pond.jpg"
+        },{
+          text: "Eagle-&-Waterfall.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Eagle-&-Waterfall.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Eagle-&-Waterfall.jpg"
+        },{
+          text: "Earth-Horizon.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-Horizon.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-Horizon.jpg"
+        },{
+          text: "Earth-and-Moon.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-and-Moon.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-and-Moon.jpg"
+        },{
+          text: "Elephant.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Elephant.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Elephant.jpg"
+        },{
+          text: "Flamingos.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Flamingos.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Flamingos.jpg"
+        },{
+          text: "Foggy-Forest.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Foggy-Forest.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Foggy-Forest.jpg"
+        },{
+          text: "Galaxy.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Galaxy.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Galaxy.jpg"
+        },{
+          text: "Grass-Blades.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Grass-Blades.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Grass-Blades.jpg"
+        },{
+          text: "Isles.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Isles.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Isles.jpg"
+        },{
+          text: "Milky-Way.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Milky-Way.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Milky-Way.jpg"
+        },{
+          text: "Pink-Lotus-Flower.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Pink-Lotus-Flower.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Pink-Lotus-Flower.jpg"
+        },{
+          text: "Wave.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Wave.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Wave.jpg"
+        },{
+          text: "Zebras.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Zebras.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Zebras.jpg"
+        }]
+      },{
+        text: "windows的示例图片",
+        children: [{
+          text: "Chrysanthemum",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Chrysanthemum.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Chrysanthemum.jpg"
+        },{
+          text: "Desert",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Desert.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Desert.jpg"
+        },{
+          text: "Hydrangeas",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Hydrangeas.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Hydrangeas.jpg"
+        },{
+          text: "Jellyfish",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Jellyfish.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Jellyfish.jpg"
+        },{
+          text: "Koala",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Koala.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Koala.jpg"
+        },{
+          text: "Lighthouse",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Lighthouse.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Lighthouse.jpg"
+        },{
+          text: "Penguins",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Penguins.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Penguins.jpg"
+        },{
+          text: "Tulips",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Tulips.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Tulips.jpg"
+        }]
+      },{
+        text: "两层测试(文件夹必须靠上面)",
+        children: [{
+          text: "mac的示例图片",
+          children: [{
+            text: "Sky",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Sky.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Sky.jpg"
+          },{
+            text: "Beach.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Beach.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Beach.jpg"
+          },{
+            text: "BluePond.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BluePond.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BluePond.jpg"
+          },{
+            text: "BristleGrass.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BristleGrass.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BristleGrass.jpg"
+          },{
+            text: "Desert.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Desert.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Desert.jpg"
+          },{
+            text: "Ducks-on-a-Misty-Pond.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Ducks-on-a-Misty-Pond.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Ducks-on-a-Misty-Pond.jpg"
+          },{
+            text: "Eagle-&-Waterfall.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Eagle-&-Waterfall.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Eagle-&-Waterfall.jpg"
+          },{
+            text: "Earth-Horizon.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-Horizon.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-Horizon.jpg"
+          },{
+            text: "Earth-and-Moon.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-and-Moon.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-and-Moon.jpg"
+          },{
+            text: "Elephant.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Elephant.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Elephant.jpg"
+          },{
+            text: "Flamingos.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Flamingos.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Flamingos.jpg"
+          },{
+            text: "Foggy-Forest.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Foggy-Forest.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Foggy-Forest.jpg"
+          },{
+            text: "Galaxy.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Galaxy.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Galaxy.jpg"
+          },{
+            text: "Grass-Blades.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Grass-Blades.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Grass-Blades.jpg"
+          },{
+            text: "Isles.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Isles.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Isles.jpg"
+          },{
+            text: "Milky-Way.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Milky-Way.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Milky-Way.jpg"
+          },{
+            text: "Pink-Lotus-Flower.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Pink-Lotus-Flower.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Pink-Lotus-Flower.jpg"
+          },{
+            text: "Wave.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Wave.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Wave.jpg"
+          },{
+            text: "Zebras.jpg",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Zebras.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Zebras.jpg"
+          }]
+        },{
+          text: "windows的示例图片",
+          children: [{
+            text: "Chrysanthemum",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Chrysanthemum.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Chrysanthemum.jpg"
+          },{
+            text: "Desert",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Desert.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Desert.jpg"
+          },{
+            text: "Hydrangeas",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Hydrangeas.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Hydrangeas.jpg"
+          },{
+            text: "Jellyfish",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Jellyfish.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Jellyfish.jpg"
+          },{
+            text: "Koala",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Koala.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Koala.jpg"
+          },{
+            text: "Lighthouse",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Lighthouse.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Lighthouse.jpg"
+          },{
+            text: "Penguins",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Penguins.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Penguins.jpg"
+          },{
+            text: "Tulips",
+            src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Tulips.jpg",
+            miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Tulips.jpg"
+          }]
+        },{
+          text: "Sky",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Sky.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Sky.jpg"
+        },{
+          text: "Beach.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Beach.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Beach.jpg"
+        },{
+          text: "BluePond.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BluePond.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BluePond.jpg"
+        },{
+          text: "BristleGrass.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BristleGrass.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/BristleGrass.jpg"
+        },{
+          text: "Desert.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Desert.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Desert.jpg"
+        },{
+          text: "Ducks-on-a-Misty-Pond.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Ducks-on-a-Misty-Pond.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Ducks-on-a-Misty-Pond.jpg"
+        },{
+          text: "Eagle-&-Waterfall.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Eagle-&-Waterfall.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Eagle-&-Waterfall.jpg"
+        },{
+          text: "Earth-Horizon.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-Horizon.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-Horizon.jpg"
+        },{
+          text: "Earth-and-Moon.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-and-Moon.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Earth-and-Moon.jpg"
+        },{
+          text: "Elephant.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Elephant.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Elephant.jpg"
+        },{
+          text: "Flamingos.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Flamingos.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Flamingos.jpg"
+        },{
+          text: "Foggy-Forest.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Foggy-Forest.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Foggy-Forest.jpg"
+        },{
+          text: "Galaxy.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Galaxy.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Galaxy.jpg"
+        },{
+          text: "Grass-Blades.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Grass-Blades.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Grass-Blades.jpg"
+        },{
+          text: "Isles.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Isles.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Isles.jpg"
+        },{
+          text: "Milky-Way.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Milky-Way.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Milky-Way.jpg"
+        },{
+          text: "Pink-Lotus-Flower.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Pink-Lotus-Flower.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Pink-Lotus-Flower.jpg"
+        },{
+          text: "Wave.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Wave.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Wave.jpg"
+        },{
+          text: "Zebras.jpg",
+          src: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Zebras.jpg",
+          miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/mac/Zebras.jpg"
+        }]
+      },{
+        text: "Chrysanthemum",
+        src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Chrysanthemum.jpg",
+        miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Chrysanthemum.jpg"
+      },{
+        text: "Desert",
+        src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Desert.jpg",
+        miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Desert.jpg"
+      },{
+        text: "Hydrangeas",
+        src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Hydrangeas.jpg",
+        miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Hydrangeas.jpg"
+      },{
+        text: "Jellyfish",
+        src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Jellyfish.jpg",
+        miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Jellyfish.jpg"
+      },{
+        text: "Koala",
+        src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Koala.jpg",
+        miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Koala.jpg"
+      },{
+        text: "Lighthouse",
+        src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Lighthouse.jpg",
+        miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Lighthouse.jpg"
+      },{
+        text: "Penguins",
+        src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Penguins.jpg",
+        miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Penguins.jpg"
+      },{
+        text: "Tulips",
+        src: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Tulips.jpg",
+        miniSrc: "https://s.tbcdn.cn/g/fi/act/finder/img/windows/Tulips.jpg"
+      }];
+
+
+
+
+
+
+      var cfg = {
+        nodes: nodes, // 左边的文件树形结构
+        cookieReg: "userNameFinderCookie", // 替换userName，这样不同帐号会有不同的cookie命名控件
+        westWidth: 244, //左边树的宽度
+        previewListHeight: 120, // 底下的预览小图的容器高度
+
+        // previewTrigger: "hover", //底下预览的触发事件,默认为click
+        // hoverDelay: 100, //hover的触发delay事件,默认为0
+
+        // 无须修改的配置，为了兼容IE的执行顺序，必须写在页面上初始化。
+        tabs: $(".btn-group .btn-tabs"),
+        autoInit: true
+      }
+
+
+
+      // 初始化cookie信息。
+      function initCookieInfo(key, defaultValue){
+        var cookieKey = key + cfg.cookieReg,
+          cookieVal = jQuery.cookie(cookieKey);
+
+        if (cookieVal === null || cookieVal === undefined) {
+          var returnValue = defaultValue || 0;
+          return returnValue;
+        } else {
+          if (typeof defaultValue === "number") {
+            return Number(cookieVal);
+          } else if (typeof defaultValue === "object") {
+            return jQuery.parseJSON(cookieVal);
+          } else {
+            return cookieVal;
+          }
+        }
+      }
+      var defaultImg = "https://s.tbcdn.cn/g/fi/act/finder/img/hello.png";
+      function initCookie(){
+        cfg.wrapModel = initCookieInfo("wrapModel", 1);
+        cfg.activeImgView = initCookieInfo("activeImgView", 0);
+        cfg.selected = initCookieInfo("selected", 0);
+        cfg.imgSrc0 = initCookieInfo("imgSrc0", defaultImg);
+        cfg.imgSrc1 = initCookieInfo("imgSrc1", defaultImg);
+        cfg.imgSrc2 = initCookieInfo("imgSrc2", defaultImg);
+        cfg.imgList = initCookieInfo("imgList", [{src: defaultImg,miniSrc: defaultImg}])
+      }
+      initCookie();
+
+      // 初始化
+      var main = new Main(cfg);
+
+    })
+  </script>
+</body>
+</html>
